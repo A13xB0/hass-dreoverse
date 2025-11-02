@@ -197,16 +197,16 @@ def apply_device_config(device: dict) -> dict:
         # Deep merge configurations - our fallback config takes precedence for missing keys
         for key, value in config_data["config"].items():
             if key not in device["config"]:
+                # Key doesn't exist, add it
                 device["config"][key] = value
-            elif key == "sensor_entity_config" and isinstance(value, dict):
-                # For sensor_entity_config, merge the temperature sensor config
-                if "sensor_entity_config" not in device["config"]:
-                    device["config"]["sensor_entity_config"] = {}
+            elif key == "sensor_entity_config" and isinstance(value, dict) and isinstance(device["config"].get(key), dict):
+                # sensor_entity_config exists, merge it deeply
                 for sensor_key, sensor_conf in value.items():
                     if sensor_key not in device["config"]["sensor_entity_config"]:
+                        # Sensor doesn't exist, add it
                         device["config"]["sensor_entity_config"][sensor_key] = sensor_conf
-                    elif isinstance(sensor_conf, dict):
-                        # Merge sensor configuration, adding missing keys
+                    elif isinstance(sensor_conf, dict) and isinstance(device["config"]["sensor_entity_config"].get(sensor_key), dict):
+                        # Sensor exists, merge its configuration keys
                         for conf_key, conf_value in sensor_conf.items():
                             if conf_key not in device["config"]["sensor_entity_config"][sensor_key]:
                                 device["config"]["sensor_entity_config"][sensor_key][conf_key] = conf_value
