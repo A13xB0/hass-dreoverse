@@ -16,6 +16,7 @@ from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 
 from .const import DreoEntityConfigSpec
 from .coordinator import DreoDataUpdateCoordinator
+from .device_configs import apply_device_config
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -54,6 +55,10 @@ async def async_login(
 
     try:
         devices = await hass.async_add_executor_job(setup_client)
+        
+        # Apply fallback configurations for devices that need it (e.g., DR-HSH034S)
+        devices = [apply_device_config(device) for device in devices]
+        
     except DreoBusinessException as ex:
         raise ConfigEntryAuthFailed("Invalid username or password") from ex
     except DreoException as ex:
@@ -96,13 +101,25 @@ async def async_setup_device_coordinator(
 ) -> None:
     """Set up coordinator for a single device."""
 
+    # Apply fallback configuration for devices that need it (e.g., DR-HSH034S)
+    device = apply_device_config(device)
+
     device_model = device.get("model")
     device_id = device.get("deviceSn")
     device_type = device.get("deviceType")
     model_config = device.get(DreoEntityConfigSpec.TOP_CONFIG, {})
     initial_state = device.get("state")
 
-    if not device_id or not device_model or not device_type:
+    if not device_id or not device_model:
+        return
+
+    # Log if device type is still missing after applying config
+    if not device_type:
+        _LOGGER.warning(
+            "Device type not available for model %s (series: %s)",
+            device_model,
+            device.get("seriesName"),
+        )
         return
 
     if model_config is None:
