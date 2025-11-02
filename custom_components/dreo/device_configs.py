@@ -178,37 +178,54 @@ def apply_device_config(device: dict) -> dict:
     Returns:
         Device dict with configuration applied
     """
+    import logging
+    _LOGGER = logging.getLogger(__name__)
+    
     model = device.get("model")
     series = device.get("seriesName")
+    
+    _LOGGER.debug("apply_device_config: model=%s, series=%s", model, series)
     
     # Try to get fallback configuration
     config_data = get_device_config(model, series)
     if not config_data:
+        _LOGGER.debug("No fallback config found for model=%s, series=%s", model, series)
         return device
+    
+    _LOGGER.debug("Found fallback config for %s", model or series)
     
     # Apply device type if missing
     if not device.get("deviceType"):
         device["deviceType"] = config_data["deviceType"]
+        _LOGGER.debug("Set deviceType to %s", config_data["deviceType"])
     
     # Merge or set configuration
     if not device.get("config"):
         device["config"] = config_data["config"]
+        _LOGGER.debug("No existing config, using fallback config entirely")
     elif isinstance(device.get("config"), dict):
+        _LOGGER.debug("Merging configs. Existing keys: %s", list(device["config"].keys()))
         # Deep merge configurations - our fallback config takes precedence for missing keys
         for key, value in config_data["config"].items():
             if key not in device["config"]:
                 # Key doesn't exist, add it
                 device["config"][key] = value
+                _LOGGER.debug("Added missing key: %s", key)
             elif key == "sensor_entity_config" and isinstance(value, dict) and isinstance(device["config"].get(key), dict):
+                _LOGGER.debug("Merging sensor_entity_config...")
                 # sensor_entity_config exists, merge it deeply
                 for sensor_key, sensor_conf in value.items():
                     if sensor_key not in device["config"]["sensor_entity_config"]:
                         # Sensor doesn't exist, add it
                         device["config"]["sensor_entity_config"][sensor_key] = sensor_conf
+                        _LOGGER.debug("Added sensor: %s", sensor_key)
                     elif isinstance(sensor_conf, dict) and isinstance(device["config"]["sensor_entity_config"].get(sensor_key), dict):
+                        _LOGGER.debug("Merging sensor '%s' config. Before: %s", sensor_key, device["config"]["sensor_entity_config"][sensor_key])
                         # Sensor exists, merge its configuration keys
                         for conf_key, conf_value in sensor_conf.items():
                             if conf_key not in device["config"]["sensor_entity_config"][sensor_key]:
                                 device["config"]["sensor_entity_config"][sensor_key][conf_key] = conf_value
+                                _LOGGER.debug("Added %s=%s to sensor %s", conf_key, conf_value, sensor_key)
+                        _LOGGER.debug("After merge: %s", device["config"]["sensor_entity_config"][sensor_key])
     
     return device
