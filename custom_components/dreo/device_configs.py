@@ -5,7 +5,6 @@ have complete configuration data from the Dreo cloud API.
 """
 
 from homeassistant.components.climate import ClimateEntityFeature
-from homeassistant.const import UnitOfTemperature
 
 # Device model configurations
 DEVICE_CONFIGS = {
@@ -54,7 +53,7 @@ DEVICE_CONFIGS = {
                     "state_attr_name": "temperature",
                     "sensor_class": "temperature",
                     "attr_icon": "mdi:thermometer",
-                    "native_unit_of_measurement": UnitOfTemperature.FAHRENHEIT
+                    "native_unit_of_measurement": "°F"
                 }
             },
             "toggle_entity_config": {
@@ -123,7 +122,7 @@ DEVICE_CONFIGS = {
                     "state_attr_name": "temperature",
                     "sensor_class": "temperature",
                     "attr_icon": "mdi:thermometer",
-                    "native_unit_of_measurement": UnitOfTemperature.FAHRENHEIT
+                    "native_unit_of_measurement": "°F"
                 }
             },
             "toggle_entity_config": {
