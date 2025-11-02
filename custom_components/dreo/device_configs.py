@@ -181,23 +181,34 @@ def apply_device_config(device: dict) -> dict:
     model = device.get("model")
     series = device.get("seriesName")
     
-    # Check if device already has configuration
-    if device.get("config") and device.get("deviceType"):
-        return device
-    
     # Try to get fallback configuration
     config_data = get_device_config(model, series)
-    if config_data:
-        # Apply configuration
-        if not device.get("deviceType"):
-            device["deviceType"] = config_data["deviceType"]
-        
-        if not device.get("config"):
-            device["config"] = config_data["config"]
-        elif isinstance(device.get("config"), dict):
-            # Merge configurations
-            for key, value in config_data["config"].items():
-                if key not in device["config"]:
-                    device["config"][key] = value
+    if not config_data:
+        return device
+    
+    # Apply device type if missing
+    if not device.get("deviceType"):
+        device["deviceType"] = config_data["deviceType"]
+    
+    # Merge or set configuration
+    if not device.get("config"):
+        device["config"] = config_data["config"]
+    elif isinstance(device.get("config"), dict):
+        # Deep merge configurations - our fallback config takes precedence for missing keys
+        for key, value in config_data["config"].items():
+            if key not in device["config"]:
+                device["config"][key] = value
+            elif key == "sensor_entity_config" and isinstance(value, dict):
+                # For sensor_entity_config, merge the temperature sensor config
+                if "sensor_entity_config" not in device["config"]:
+                    device["config"]["sensor_entity_config"] = {}
+                for sensor_key, sensor_conf in value.items():
+                    if sensor_key not in device["config"]["sensor_entity_config"]:
+                        device["config"]["sensor_entity_config"][sensor_key] = sensor_conf
+                    elif isinstance(sensor_conf, dict):
+                        # Merge sensor configuration, adding missing keys
+                        for conf_key, conf_value in sensor_conf.items():
+                            if conf_key not in device["config"]["sensor_entity_config"][sensor_key]:
+                                device["config"]["sensor_entity_config"][sensor_key][conf_key] = conf_value
     
     return device
