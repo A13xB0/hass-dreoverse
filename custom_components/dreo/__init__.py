@@ -16,6 +16,7 @@ from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 
 from .const import DreoEntityConfigSpec
 from .coordinator import DreoDataUpdateCoordinator
+from .device_configs import apply_device_config
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -54,6 +55,10 @@ async def async_login(
 
     try:
         devices = await hass.async_add_executor_job(setup_client)
+        
+        # Apply fallback configurations for devices that need it (e.g., DR-HSH034S)
+        devices = [apply_device_config(device) for device in devices]
+        
     except DreoBusinessException as ex:
         raise ConfigEntryAuthFailed("Invalid username or password") from ex
     except DreoException as ex:
