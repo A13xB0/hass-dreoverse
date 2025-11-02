@@ -101,9 +101,6 @@ async def async_setup_device_coordinator(
 ) -> None:
     """Set up coordinator for a single device."""
 
-    # Apply fallback configuration for devices that need it (e.g., DR-HSH034S)
-    device = apply_device_config(device)
-
     device_model = device.get("model")
     device_id = device.get("deviceSn")
     device_type = device.get("deviceType")
