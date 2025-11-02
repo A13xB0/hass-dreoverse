@@ -404,8 +404,9 @@ class DreoHeaterClimate(DreoEntity, ClimateEntity):
             self._attr_min_temp = float(temp_range[0])
             self._attr_max_temp = float(temp_range[1])
         else:
-            self._attr_min_temp = 41
-            self._attr_max_temp = 85
+            # Default to Celsius range if not specified
+            self._attr_min_temp = 5.0
+            self._attr_max_temp = 35.0
 
         if isinstance(coordinator.data, DreoHeaterDeviceData):
             self._attr_target_temperature = coordinator.data.target_temperature
