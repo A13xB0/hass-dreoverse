@@ -485,13 +485,9 @@ class DreoHeaterClimate(DreoEntity, ClimateEntity):
             return
 
         temperature = max(self._attr_min_temp, min(self._attr_max_temp, temperature))
-        
-        # Convert Celsius to Fahrenheit for the device
-        # Device expects Fahrenheit, but we display in Celsius
-        temperature_f = (temperature * 9 / 5) + 32
 
         await self.async_send_command_and_update(
-            DreoErrorCode.SET_TEMPERATURE_FAILED, ecolevel=int(temperature_f)
+            DreoErrorCode.SET_TEMPERATURE_FAILED, ecolevel=int(temperature)
         )
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:

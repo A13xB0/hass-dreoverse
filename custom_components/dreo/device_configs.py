@@ -14,8 +14,8 @@ DEVICE_CONFIGS = {
             "heater_entity_config": {
                 "hvac_modes": ["off", "heat", "fan_only"],
                 "preset_modes": ["eco", "manual"],
-                "temperature_range": [5, 35],  # Celsius
-                "temperature_unit": "celsius",
+                "temperature_range": [41, 95],  # Fahrenheit (native device range)
+                "temperature_unit": "fahrenheit",
                 "hvac_mode_relate_map": {
                     "eco": {
                         "report": {
@@ -73,8 +73,8 @@ DEVICE_CONFIGS = {
             "heater_entity_config": {
                 "hvac_modes": ["off", "heat", "fan_only"],
                 "preset_modes": ["eco", "manual"],
-                "temperature_range": [5, 35],  # Celsius
-                "temperature_unit": "celsius",
+                "temperature_range": [41, 95],  # Fahrenheit (native device range)
+                "temperature_unit": "fahrenheit",
                 "hvac_mode_relate_map": {
                     "eco": {
                         "report": {

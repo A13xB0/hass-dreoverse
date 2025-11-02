@@ -382,14 +382,11 @@ class DreoHeaterDeviceData(DreoGenericDeviceData):
         if mode := state.get(DreoDirective.MODE):
             heater_data.mode = str(mode)
 
-        # Device reports in Fahrenheit, convert to Celsius
         if temp := state.get(DreoDirective.TEMPERATURE):
-            temp_f = float(temp)
-            heater_data.current_temperature = (temp_f - 32) * 5 / 9
+            heater_data.current_temperature = float(temp)
 
         if target_temp := state.get(DreoDirective.ECOLEVEL):
-            temp_f = float(target_temp)
-            heater_data.target_temperature = (temp_f - 32) * 5 / 9
+            heater_data.target_temperature = float(target_temp)
 
         if heat_level := state.get(DreoDirective.HEAT_LEVEL):
             heater_data.heat_level = str(heat_level)
