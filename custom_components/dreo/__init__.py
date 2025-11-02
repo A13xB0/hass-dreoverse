@@ -109,6 +109,15 @@ async def async_setup_device_coordinator(
     device_type = device.get("deviceType")
     model_config = device.get(DreoEntityConfigSpec.TOP_CONFIG, {})
     initial_state = device.get("state")
+    
+    _LOGGER.debug(
+        "Device %s (%s): deviceType=%s, config keys=%s, entitySupports=%s",
+        device_id,
+        device_model,
+        device_type,
+        list(model_config.keys()) if model_config else None,
+        model_config.get("entitySupports") if model_config else None,
+    )
 
     if not device_id or not device_model:
         return
