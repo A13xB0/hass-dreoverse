@@ -50,6 +50,12 @@ async def async_setup_entry(
             sensor_config = coordinator.model_config.get(
                 DreoEntityConfigSpec.SENSOR_ENTITY_CONF, {}
             )
+            _LOGGER.debug(
+                "Device %s: model_config keys=%s, sensor_config=%s",
+                device_id,
+                list(coordinator.model_config.keys()),
+                sensor_config,
+            )
             for sensor_type, sensor_conf in sensor_config.items():
                 sensors.append(
                     DreoGenericSensor(device, coordinator, sensor_type, sensor_conf)
@@ -93,8 +99,20 @@ class DreoGenericSensor(DreoEntity, SensorEntity):
         
         # Set native unit of measurement if provided in config
         native_unit = config.get("native_unit_of_measurement")
+        _LOGGER.debug(
+            "DreoGenericSensor init for %s: sensor_type=%s, config=%s, native_unit=%s",
+            device_id,
+            sensor_type,
+            config,
+            native_unit,
+        )
         if native_unit:
             self._attr_native_unit_of_measurement = native_unit
+            _LOGGER.debug(
+                "Set native_unit_of_measurement to %s for sensor %s",
+                native_unit,
+                device_id,
+            )
 
     @callback
     def _handle_coordinator_update(self) -> None:
