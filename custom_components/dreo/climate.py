@@ -424,8 +424,12 @@ class DreoHeaterClimate(DreoEntity, ClimateEntity):
 
         self._attr_available = data.available
 
+        # Base features always available
         self._attr_supported_features = (
-            ClimateEntityFeature.TURN_ON | ClimateEntityFeature.TURN_OFF
+            ClimateEntityFeature.TURN_ON 
+            | ClimateEntityFeature.TURN_OFF
+            | ClimateEntityFeature.TARGET_TEMPERATURE
+            | ClimateEntityFeature.PRESET_MODE
         )
 
         if not data.is_on:
@@ -437,12 +441,6 @@ class DreoHeaterClimate(DreoEntity, ClimateEntity):
                 if self._attr_hvac_mode_relate_map and data.hvac_mode
                 else {}
             )
-
-            if supported_features := mode_config.get(
-                DreoFeatureSpec.SUPPORTED_FEATURES, []
-            ):
-                for feature in supported_features:
-                    self._attr_supported_features |= feature
 
             if hvac_mode_mapping := mode_config.get(DreoFeatureSpec.HVAC_MODE_REPORT):
                 if isinstance(hvac_mode_mapping, dict):
@@ -457,9 +455,6 @@ class DreoHeaterClimate(DreoEntity, ClimateEntity):
                 self._attr_preset_mode = data.mode
                 if data.hvac_mode:
                     self._attr_hvac_mode = HVACMode(data.hvac_mode)
-
-            if self._attr_hvac_mode in [HVACMode.HEAT]:
-                self._attr_supported_features |= ClimateEntityFeature.PRESET_MODE
 
         self._attr_current_temperature = (
             data.current_temperature
