@@ -90,6 +90,11 @@ class DreoGenericSensor(DreoEntity, SensorEntity):
             self._attr_icon = icon
 
         self._attr_device_class = config.get(DreoFeatureSpec.SENSOR_CLASS, sensor_type)
+        
+        # Set native unit of measurement if provided in config
+        native_unit = config.get("native_unit_of_measurement")
+        if native_unit:
+            self._attr_native_unit_of_measurement = native_unit
 
     @callback
     def _handle_coordinator_update(self) -> None:

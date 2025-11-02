@@ -5,6 +5,7 @@ have complete configuration data from the Dreo cloud API.
 """
 
 from homeassistant.components.climate import ClimateEntityFeature
+from homeassistant.const import UnitOfTemperature
 
 # Device model configurations
 DEVICE_CONFIGS = {
@@ -45,7 +46,17 @@ DEVICE_CONFIGS = {
                     }
                 }
             },
-            "entitySupports": ["climate"],
+            "entitySupports": ["climate", "sensor"],
+            "sensor_entity_config": {
+                "temperature": {
+                    "attr_name": "temperature",
+                    "directive_name": "temperature",
+                    "state_attr_name": "temperature",
+                    "sensor_class": "temperature",
+                    "attr_icon": "mdi:thermometer",
+                    "native_unit_of_measurement": UnitOfTemperature.FAHRENHEIT
+                }
+            },
             "toggle_entity_config": {
                 "oscillate": {
                     "field": "oscillate",
@@ -104,7 +115,17 @@ DEVICE_CONFIGS = {
                     }
                 }
             },
-            "entitySupports": ["climate"],
+            "entitySupports": ["climate", "sensor"],
+            "sensor_entity_config": {
+                "temperature": {
+                    "attr_name": "temperature",
+                    "directive_name": "temperature",
+                    "state_attr_name": "temperature",
+                    "sensor_class": "temperature",
+                    "attr_icon": "mdi:thermometer",
+                    "native_unit_of_measurement": UnitOfTemperature.FAHRENHEIT
+                }
+            },
             "toggle_entity_config": {
                 "oscillate": {
                     "field": "oscillate",
